@@ -33,8 +33,18 @@ func main() {
 	}
 
 	// insert a row
+	query := `INSERT INTO users (first_name, last_name) VALUES ($1, $2) RETURNING id`
+	_, err = conn.Exec(query, "John", "Brown")
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Println("Inserted a row")
 
 	// get rows from table again
+	err = getAllRows(conn)
+	if err != nil {
+		log.Fatal(fmt.Errorf("error getting rows from table: %v", err))
+	}
 
 	// update a row
 
