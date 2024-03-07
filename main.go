@@ -27,6 +27,10 @@ func main() {
 	log.Println("Pinged the database")
 
 	// get rows from table
+	err = getAllRows(conn)
+	if err != nil {
+		log.Fatal(fmt.Errorf("error getting rows from table: %v", err))
+	}
 
 	// insert a row
 
@@ -41,4 +45,33 @@ func main() {
 	// delete a row
 
 	// get rows again
+}
+
+func getAllRows(conn *sql.DB) error {
+	rows, err := conn.Query("SELECT id, first_name, last_name FROM users")
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	defer rows.Close()
+
+	var firstName, lastName string
+	var id int
+
+	for rows.Next() {
+		err := rows.Scan(&id, &firstName, &lastName)
+		if err != nil {
+			log.Println(err)
+			return err
+		}
+		fmt.Println("Record is: ", id, firstName, lastName)
+	}
+
+	if err = rows.Err(); err != nil {
+		log.Fatal("Error scanning rows: ", err)
+	}
+
+	fmt.Println("------------------------------")
+
+	return nil
 }
