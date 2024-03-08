@@ -47,14 +47,46 @@ func main() {
 	}
 
 	// update a row
+	stmt := `UPDATE users SET last_name = $1 WHERE id = $2`
+	_, err = conn.Exec(stmt, "Brown", 5)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	log.Println("Updated one or more rows")
 
 	// get rows from table again
+	err = getAllRows(conn)
+	if err != nil {
+		log.Fatal(fmt.Errorf("error getting rows from table: %v", err))
+	}
 
 	// get one row by id
+	query = `SELECT id, first_name, last_name FROM users WHERE id = $1`
+
+	var firstName, lastName string
+	var id int
+
+	row := conn.QueryRow(query, 4)
+	err = row.Scan(&id, &firstName, &lastName)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Println("QueryRow returns: ", id, firstName, lastName)
 
 	// delete a row
+	query = `DELETE FROM users WHERE id = $1`
+	_, err = conn.Exec(query, 10)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Println("Deleted id 10")
 
 	// get rows again
+	err = getAllRows(conn)
+	if err != nil {
+		log.Fatal(fmt.Errorf("error getting rows from table: %v", err))
+	}
 }
 
 func getAllRows(conn *sql.DB) error {
